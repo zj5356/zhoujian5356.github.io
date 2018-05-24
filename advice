@@ -1,0 +1,11 @@
+<?php 
+namespace Admin\Model;
+use Think\Model;
+class AdivceModel extends Model{
+	//指定实际要关联的真实数据表名称，不会自动加前缀
+	//实际数据表名（包括表前缀）
+	protected $trueTableName = 'advice';
+}
+
+
+ ?>
