@@ -1,0 +1,81 @@
+<?php 
+//声明命名空间
+namespace Admin\Model;
+//引入父类模型
+use Think\Model;
+//定义当前模型类
+class GoodsModel extends Model{
+	//根据需要写一些属性和方法
+	//
+	//字段映射
+	protected $_map = array(
+		//表单中的字段名  => 数据表字段名
+		"name" => "goods_name",
+		"price" => "goods_price",
+		"number" => "goods_number",
+		);
+
+	//自动验证
+	protected $_validate = array(
+		//array(验证字段1，验证规则，错误提示，[验证条件，附加规则，验证时间])
+		array('goods_name','require','商品名称不能为空'),
+		array('goods_price','require','商品价格不能为空'),
+		array('goods_price','currency','商品价格格式不正确'),
+		array('goods_number','require','商品数量不能为空'),
+		array('goods_number','number','商品数量格式不正确'),
+		);
+
+	//自动完成
+	//$_auto = array( 
+	//array(完成字段1,完成规则,[完成条件,附加规则]), 
+	//array(完成字段2,完成规则,[完成条件,附加规则]),
+	//);
+	protected $_auto = array(
+		array('goods_create_time','time',1,'function'),
+		);
+	//封装一个logo图片上传的方法
+	public function upload_logo(&$data){
+		//进行文件上传  将文件保存到指定位置，将文件路径存到数据表（向$data中加字段）
+		if ($_FILE['logo']['error'] > 0){
+			//文件有错误
+			$this -> error = '文件有错误';
+			return false;
+		}
+		//实例化文件上传类
+		$config = array(
+			'maxSize' => 10 * 1024 * 1024,//上传的文件大小限制（0~不做限制）单位byte
+			'exts' => array('jpg','png','gif','jpeg'),//允许上传的文件后缀
+			//'rootPath' => './Public/Uploads/',   保存根路径
+			'rootPath' => ROOT_PATH . UPLOAD_PATH,//保存根目录
+		);
+		$upload = new \Think\Upload($config);
+		//调用uploadOne方法或者upload方法  将文件保存到指定位置
+		$res = $upload -> uploadOne($_FILES['logo']);
+		if (!$res) {
+			//上传失败
+			$this -> error =$upload -> getError();
+			return false;
+		}
+		//拼接文件的地址
+		$data['goods_big_img'] = UPLOAD_PATH . $res['savepath'] . $res['savename'];
+		return true;
+		//生成缩略图
+		//实例化Image类
+		$image = new \Think\Image();
+		//调用open方法  打开原图片
+		$image -> open( ROOT_PATH . $data['goods_big_img']);
+		//调用thumb方法生成缩略图  指定最大宽高
+		$image -> thumb(188, 188);
+		$goods_small_img = UPLOAD_PATH . $res['savepath'] . 'thumb_' . $res['savename'];
+		//保存新的缩略图
+		$image -> save( ROOT_PATH . $goods_small_img);
+
+		$data['goods_small_img'] = $goods_small_img;
+		return true; 
+	}
+}
+
+
+
+
+ ?>
