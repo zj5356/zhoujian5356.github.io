@@ -1,0 +1,65 @@
+<?php 
+namespace Admin\Controller;
+use Think\Controller;
+use Admin\Model\GoodsModel;
+class TestController extends Controller{
+	public function index(){
+		// $model = new GoodsModel;
+		// dump($model);
+		// 
+		// 快速实例化 M函数
+		// $model = M('Goods')
+		$model = M('Advice',null);
+		dump($model);
+	}
+	public function chaxun(){
+		//数据查询
+		//实例化模型
+		// $model = D("Goods");
+		// //查询数据
+		// //$data = $model -> find();
+		// $data = $model -> find(2);
+		// //$data = $model -> select();
+		// dump($data);
+		// 
+		// 统计查询
+		// $data = $model -> where("id > 4") -> count();
+		// dump($data);
+		// 
+		
+		//连表查询
+		$advice_model = M('Advice', null);
+		$data = $advice_model -> alias('a') -> field('a.*,u.username') -> join("left join tpshop_user as u on a.user_id") -> select();
+		dump($data);
+
+	}
+	public function test_cookie(){
+		//设置cookie
+		cookie('name','zz');
+		//读取
+		$name = cookie('name');
+		dump($name);
+
+		//删除
+		cookie('name',null);
+		dump(cookie('name'));
+		dump(cookie('team'));
+	}
+	//session函数
+	public function test_session(){
+		$user = ['username' => 'admin','nickname' => 'admin123'];
+		session('user',$user);
+		session('user.username','test');
+		dump(session());
+		//判断是否设置某个session
+		dump(session('?user'));
+	}
+	//测试xss攻击的防范
+	public function test_xss(){
+		$name = 'test<script>alert("abc");</script>test';
+		$name = remove_xss($name);
+
+		dump($name);
+	}
+}
+ ?>
