@@ -1,0 +1,20 @@
+<?php 
+namespace Admin\Controller;
+use Think\Controller;
+class ManagerController extends Controller{
+	//管理员列表页
+	public function index(){
+		//实例化模型
+		$model = D('Manager');
+		$data = $model -> select();
+		//变量赋值
+		$this -> assign('data',$data);
+		//调用模板
+		$this -> display();
+	}
+}
+
+
+
+
+ ?>
