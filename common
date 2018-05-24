@@ -1,0 +1,19 @@
+<?php 
+namespace Admin\Controller;
+use Think\Controller;
+class CommonController extends Controller{
+	public function __construct(){
+		//先调用父类构造方法
+		parent::__construct();
+		//登陆判断
+		if (!session('?manager_info')) {
+			//没有登陆  跳转到登陆页
+			$this -> redirect('Admin/Login/login');
+		}
+	}
+}
+
+
+
+
+ ?>
